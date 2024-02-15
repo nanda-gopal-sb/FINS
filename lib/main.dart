@@ -58,7 +58,7 @@ class _AppState extends State<App> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: pages[_selectedPageIndex],
+      body: Row(children: [pages[_selectedPageIndex]]),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -128,32 +128,34 @@ class SensorCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 20),
       decoration: BoxDecoration(
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0xffDDDDDD),
-            blurRadius: 14.0,
-            spreadRadius: 1.0,
-          )
+            // TODO: Find a better name for shadow color
+            color: Theme.of(context).colorScheme.tertiary.withAlpha(70),
+            blurRadius: 10.0,
+            spreadRadius: 0.0,
+          ),
+          BoxShadow(
+            // to color inside card
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
         ],
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        color: Theme.of(context).colorScheme.primaryContainer,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              heading,
-              style: sensorHeadingStyle,
-            ),
-            ProgressBar(
-              value: value,
-              unit: unit,
-              colorScheme: Theme.of(context).colorScheme,
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            heading,
+            style: sensorHeadingStyle,
+          ),
+          ProgressBar(
+            value: value,
+            unit: unit,
+            colorScheme: Theme.of(context).colorScheme,
+          ),
+        ],
       ),
     );
   }
