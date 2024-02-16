@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("FINS App"),
+        title: const Text("FINS App"),
       ),
       body: Row(children: [pages[_selectedPageIndex]]),
       bottomNavigationBar: BottomNavigationBar(

@@ -7,9 +7,8 @@ class SensorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double temperature = 39; //to be gotten from Sensors
-    double moisture = 25;
     double humidity = 85;
-    double soilMosture = 55;
+    double moisture = 55;
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(30),
@@ -18,8 +17,7 @@ class SensorWidget extends StatelessWidget {
           children: [
             SensorCard(heading: "Temperature", unit: " °C", value: temperature),
             SensorCard(heading: "Humidity", unit: " %", value: humidity),
-            SensorCard(heading: "Moisture", unit: " %", value: moisture),
-            SensorCard(heading: "SoilMosture", unit: " %", value: soilMosture),
+            SensorCard(heading: "Soil Moisture", unit: " %", value: moisture),
           ],
         ),
       ),
