@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "405851937316",
+    "project_id": "project-fins",
+    "storage_bucket": "project-fins.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405851937316:android:54cbdf9c1824015df696b1",
+        "android_client_info": {
+          "package_name": "com.example.fins"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg-RwjnYmxevCdMUSWZ11dJDeEXc6kiJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

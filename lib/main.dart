@@ -21,8 +21,9 @@ class FINS extends StatelessWidget {
         } else {
           final bool isLoggedIn = snapshot.data ?? false;
           return MaterialApp(
-              theme: getAppTheme(),
-              home: isLoggedIn ? const HomePage() : const LoginPage());
+            theme: getAppTheme(),
+            home: isLoggedIn ? const HomePage() : const LoginPage(),
+          );
         }
       },
     );
