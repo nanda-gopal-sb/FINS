@@ -1,6 +1,5 @@
 import 'package:fins/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -96,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
               },
               child: const Text(
                 'Login',
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),
           ),
