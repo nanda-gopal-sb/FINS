@@ -12,7 +12,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Demo')),
-      body: Column(
+      body: const Column(
         children: [
           Text("data"),
         ],
