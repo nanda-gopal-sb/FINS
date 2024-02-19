@@ -17,3 +17,5 @@ ThemeData getAppTheme() {
     ),
   );
 }
+
+const TextStyle userPageNameTextTheme = TextStyle(fontSize: 30, fontFamily: "");

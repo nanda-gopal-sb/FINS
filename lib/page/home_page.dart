@@ -1,4 +1,5 @@
-import 'package:fins/sensor_page.dart';
+import 'package:fins/page/sensor_page.dart';
+import 'package:fins/page/user_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,7 +10,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedPageIndex = 1;
+  int _selectedPageIndex = 2;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     const List<Widget> pages = <Widget>[
       SensorWidget(),
       Placeholder(),
-      Placeholder(),
+      UserPage(),
     ];
     return Scaffold(
       appBar: AppBar(

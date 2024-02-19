@@ -1,5 +1,7 @@
-import 'package:fins/home_page.dart';
+import 'package:fins/components/input_components.dart';
+import 'package:fins/page/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -18,8 +20,10 @@ class _LoginPageState extends State<LoginPage> {
     BuildContext context,
     VoidCallback callback,
   ) async {
-    // SharedPreferences pref = await SharedPreferences.getInstance();
-    // pref.setBool("isLoggedIn", true);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool("isLoggedIn", true);
+    pref.setString("userName", "test_name");
+    pref.setInt("userID", 937321109);
     callback.call();
   }
 
@@ -39,16 +43,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Image(image: AssetImage('assets/images/icon.png')),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
-                hintText: 'Enter valid email id as abc@gmail.com',
-              ),
-            ),
-          ),
+          InputTextField(),
           const Padding(
             padding: EdgeInsets.only(
               left: 15.0,

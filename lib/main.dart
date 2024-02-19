@@ -1,10 +1,17 @@
 import 'package:fins/app_theme.dart';
-import 'package:fins/home_page.dart';
-import 'package:fins/login_page.dart';
+import 'package:fins/page/home_page.dart';
+import 'package:fins/page/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const FINS());
 }
 
@@ -19,7 +26,7 @@ class FINS extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show loading indicator while checking login status
         } else {
-          final bool isLoggedIn = snapshot.data ?? false;
+          final bool isLoggedIn = false;
           return MaterialApp(
             theme: getAppTheme(),
             home: isLoggedIn ? const HomePage() : const LoginPage(),
@@ -30,6 +37,14 @@ class FINS extends StatelessWidget {
   }
 
   Future<bool> checkLoginStatus() async {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isLoggedIn') ?? false;
   }
