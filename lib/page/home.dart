@@ -1,4 +1,4 @@
-import 'package:fins/page/sensor_page.dart';
+import 'package:fins/page/sensors.dart';
 import 'package:fins/page/user_page.dart';
 import 'package:flutter/material.dart';
 

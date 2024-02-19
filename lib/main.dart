@@ -1,6 +1,6 @@
 import 'package:fins/app_theme.dart';
-import 'package:fins/page/home_page.dart';
-import 'package:fins/page/login_page.dart';
+import 'package:fins/page/home.dart';
+import 'package:fins/page/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +26,7 @@ class FINS extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show loading indicator while checking login status
         } else {
-          final bool isLoggedIn = false;
+          bool isLoggedIn = snapshot.data ?? false;
           return MaterialApp(
             theme: getAppTheme(),
             home: isLoggedIn ? const HomePage() : const LoginPage(),
@@ -46,6 +46,7 @@ class FINS extends StatelessWidget {
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
+    // return prefs.getBool('isLoggedIn') ?? false;
+    return false;
   }
 }
