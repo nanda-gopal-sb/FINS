@@ -11,9 +11,9 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return const Expanded(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
+        padding: EdgeInsets.all(30),
         child: Column(
           children: [UserProfile()],
         ),
