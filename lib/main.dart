@@ -45,6 +45,7 @@ class FINS extends StatelessWidget {
       }
     });
 
+    // ignore: unused_local_variable
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // return prefs.getBool('isLoggedIn') ?? false;
     return false;

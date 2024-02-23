@@ -39,6 +39,10 @@ dependencies:
   shared_preferences: ^2.2.2
   firebase_core: ^2.25.4
   firebase_auth: ^4.17.4
+  camera: ^0.10.5+9
+  path_provider: ^2.1.2
+  path: ^1.8.3
+  image_picker: 
 dev_dependencies:
   flutter_test:
     sdk: flutter

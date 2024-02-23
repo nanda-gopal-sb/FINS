@@ -41,7 +41,7 @@ class UserProfile extends StatelessWidget {
           child: Icon(
             Icons.account_circle_sharp,
             size: 200,
-            color: Colors.black.withOpacity(.6),
+            color: Colors.grey.withOpacity(.6),
           ),
         ),
         // Text(usrn, style: userPageNameTextTheme),

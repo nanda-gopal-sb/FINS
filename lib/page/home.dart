@@ -1,6 +1,9 @@
+//import 'package:camera/camera.dart';
+import 'package:fins/page/home_screen.dart';
 import 'package:fins/page/sensors.dart';
 import 'package:fins/page/user_page.dart';
 import 'package:flutter/material.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,19 +13,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedPageIndex = 2;
+  int _selectedPageIndex = 1;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
-    const List<Widget> pages = <Widget>[
+    List<Widget> pages = <Widget>[
       SensorWidget(),
-      Placeholder(),
+      UploadPage(),
       UserPage(),
     ];
     return Scaffold(
