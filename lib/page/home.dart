@@ -4,7 +4,6 @@ import 'package:fins/page/sensors.dart';
 import 'package:fins/page/user_page.dart';
 import 'package:flutter/material.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -20,12 +19,13 @@ class _HomePageState extends State<HomePage> {
       _selectedPageIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> pages = <Widget>[
-      SensorWidget(),
-      UploadPage(),
-      UserPage(),
+      const SensorWidget(),
+      const UploadPage(),
+      const UserPage(),
     ];
     return Scaffold(
       appBar: AppBar(
