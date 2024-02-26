@@ -35,6 +35,23 @@ class _UploadPageState extends State<UploadPage> {
             ),
           ),
           const SizedBox(height: 20),
+          SizedBox(
+            child: MaterialButton(
+              onPressed: () {
+                _pickImageFromCamera();
+              },
+              color: Colors.cyan,
+              child: const Text(
+                "Upload Image from Camera",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
           _selectedImage != null
               ? Image.file(
                   _selectedImage!,
@@ -50,8 +67,17 @@ class _UploadPageState extends State<UploadPage> {
   Future _pickImageFromGallery() async {
     final returnedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+        if(returnedImage == null) return ; 
     setState(() {
-      _selectedImage = File(returnedImage!.path);
+      _selectedImage = File(returnedImage.path);
+    });
+  }
+  Future _pickImageFromCamera() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+        if(returnedImage == null) return ; 
+    setState(() {
+      _selectedImage = File(returnedImage.path);
     });
   }
 }
