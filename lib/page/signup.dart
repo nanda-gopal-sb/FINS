@@ -120,7 +120,7 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 20),
               BIgActionButton(
                 onClick: () async {
-                  String res = await AuthMethods().signUp(
+                  String res = await AuthMethods().signUpUser(
                     email: _emailController.text,
                     name: _nameController.text,
                     password: _passwordController.text,
