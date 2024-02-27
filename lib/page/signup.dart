@@ -1,5 +1,10 @@
+import 'package:fins/app_theme.dart';
 import 'package:fins/components/input_components.dart';
+import 'package:fins/firebase/auth.dart';
+import 'package:fins/utils/file_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -17,6 +22,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  Uint8List? _image;
+
+  final defaultPfP = Image.asset(
+    'assets/images/default_pfp.jpg',
+    height: 200,
+    width: 200,
+  );
 
   @override
   void dispose() {
@@ -24,6 +36,27 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _nameController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAssetAsUint8List("assets/images/default_pfp.jpg")
+        .then((value) => setState(() => _image = value));
+  }
+
+  void selectImage() async {
+    final ImagePicker imgPicker = ImagePicker();
+
+    XFile? file = await imgPicker.pickImage(source: ImageSource.gallery);
+    Uint8List img;
+    if (file != null) {
+      file.readAsBytes().then((img) => setState(() => _image = img));
+    } else {
+      print("No img selected");
+      img = await getAssetAsUint8List("assets/images/default_pfp.jpg");
+      setState(() => _image = img);
+    }
   }
 
   @override
@@ -36,22 +69,29 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Flexible(flex: 1, child: Container()),
-              Container(
+              SizedBox(
                 height: 200,
                 width: 200,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Icon(
-                      Icons.add_a_photo,
-                      color: Colors.grey.shade800,
+                    CircleAvatar(
+                      radius: 100,
+                      backgroundColor: getAppTheme().colorScheme.background,
+                      child:
+                          _image != null ? Image.memory(_image!) : defaultPfP,
                     ),
-                    const Text(" Add a Photo"),
+                    Positioned(
+                      bottom: 5,
+                      right: 5,
+                      child: IconButton(
+                        onPressed: selectImage,
+                        icon: Icon(
+                          Icons.add_a_photo,
+                          color: Colors.grey.shade800,
+                          size: 40,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -79,7 +119,14 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               const SizedBox(height: 20),
               BIgActionButton(
-                onClick: () {},
+                onClick: () async {
+                  String res = await AuthMethods().signUp(
+                    email: _emailController.text,
+                    name: _nameController.text,
+                    password: _passwordController.text,
+                    file: _image!,
+                  );
+                },
                 text: "Create Account",
               ),
               const SizedBox(
@@ -102,8 +149,4 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
-}
-
-MaterialStatePropertyAll<Color> colorToMColor(Color c) {
-  return MaterialStatePropertyAll(c);
 }

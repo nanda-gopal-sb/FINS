@@ -1,6 +1,7 @@
 import 'package:fins/app_theme.dart';
 import 'package:fins/page/home.dart';
 import 'package:fins/page/login.dart';
+import 'package:fins/page/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,9 +29,8 @@ class FINS extends StatelessWidget {
         } else {
           bool isLoggedIn = snapshot.data ?? false;
           return MaterialApp(
-            theme: getAppTheme(),
-            home: isLoggedIn ? const HomePage() : const LoginPage(),
-          );
+              theme: getAppTheme(),
+              home: isLoggedIn ? const HomePage() : const SignUpPage());
         }
       },
     );
