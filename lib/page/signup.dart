@@ -23,6 +23,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   final defaultPfP = Image.asset(
     'assets/images/default_pfp.jpg',
@@ -57,6 +58,25 @@ class _SignUpPageState extends State<SignUpPage> {
       img = await getAssetAsUint8List("assets/images/default_pfp.jpg");
       setState(() => _image = img);
     }
+  }
+
+  void signUp() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      name: _nameController.text,
+      password: _passwordController.text,
+      file: _image!,
+    );
+
+    if (res != "success") {
+      showSnackBar(context, res);
+    } else {}
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -118,16 +138,15 @@ class _SignUpPageState extends State<SignUpPage> {
                 isPass: true,
               ),
               const SizedBox(height: 20),
-              BIgActionButton(
-                onClick: () async {
-                  String res = await AuthMethods().signUpUser(
-                    email: _emailController.text,
-                    name: _nameController.text,
-                    password: _passwordController.text,
-                    file: _image!,
-                  );
-                },
-                text: "Create Account",
+              InkWell(
+                onTap: signUp,
+                child: _isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: getAppTheme().colorScheme.primary,
+                        ),
+                      )
+                    : const Text("Create Account"),
               ),
               const SizedBox(
                 height: 40,
