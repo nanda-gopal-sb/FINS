@@ -1,14 +1,11 @@
-> i guess there's some problem in app's structure. probably need a rewrite
-
-
 ## Known issues
 	* profile pic accepts all files, but should  only accept jpg/png/webp
 
 
-- [ ] Interface
+- [x] Interface
 	- [x] Main page
 	- [x] sensor dashboard
-	- [ ] User page
+	- [x] User page
 
 - [ ] Connectors
 	- [ ] define how connector/api should work
