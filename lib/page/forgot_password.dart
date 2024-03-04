@@ -1,4 +1,4 @@
-import 'package:fins/components/input_components.dart';
+import 'package:fins/utils/components.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -32,7 +32,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               textInputType: TextInputType.text,
             ),
             const SizedBox(height: 10),
-            BIgActionButton(
+            BigActionButton(
               onClick: () {},
               text: "Reset Password",
             ),

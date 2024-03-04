@@ -2,7 +2,9 @@
 import 'package:fins/page/home_screen.dart';
 import 'package:fins/page/sensors.dart';
 import 'package:fins/page/user_page.dart';
+import 'package:fins/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +20,18 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedPageIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    addData();
+  }
+
+  addData() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    await userProvider.refreshUser();
   }
 
   @override

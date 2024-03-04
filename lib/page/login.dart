@@ -1,12 +1,12 @@
-import 'package:fins/components/input_components.dart';
+import 'package:fins/utils/components.dart';
+import 'package:fins/firebase/auth.dart';
 import 'package:fins/page/forgot_password.dart';
-import 'package:fins/page/home.dart';
 import 'package:fins/page/signup.dart';
+import 'package:fins/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -14,12 +14,32 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  void login() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+
+    if (res != "success") {
+      if (context.mounted) showSnackBar(context, res);
+    } else {
+      if (context.mounted) goToHome(context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -59,17 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              BIgActionButton(
-                text: "Login",
-                onClick: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                    (route) => false,
-                  );
-                },
-              ),
+              actionButton(context, login, _isLoading, "Login"),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

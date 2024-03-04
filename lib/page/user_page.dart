@@ -1,5 +1,10 @@
+import 'package:fins/firebase/auth.dart';
+import 'package:fins/models/user.dart';
+import 'package:fins/page/login.dart';
+import 'package:fins/provider/user_provider.dart';
+import 'package:fins/utils/components.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -27,24 +32,51 @@ class UserProfile extends StatelessWidget {
     super.key,
   });
 
-  Future<String?> getUserParams() async {
-    SharedPreferences spref = await SharedPreferences.getInstance();
-    String? userName = spref.getString("userName");
-    return userName;
-  }
-
   @override
   Widget build(BuildContext context) {
+    AppUser user = Provider.of<UserProvider>(context).getUser;
     return Column(
       children: [
-        SizedBox(
-          child: Icon(
-            Icons.account_circle_sharp,
-            size: 200,
-            color: Colors.grey.withOpacity(.6),
+        Container(
+          width: 200,
+          height: 200,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.background,
+            image: DecorationImage(
+              image: NetworkImage(user.photoURL),
+              fit: BoxFit.cover,
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(100.0)),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              width: 1.0,
+            ),
           ),
         ),
-        // Text(usrn, style: userPageNameTextTheme),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          user.name,
+          style: const TextStyle(fontSize: 30),
+        ),
+        Text(
+          user.email,
+          style: const TextStyle(fontSize: 20),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        BigActionButton(
+          text: "Log Out",
+          onClick: () {
+            AuthMethods().signOut();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          },
+        )
       ],
     );
   }

@@ -1,11 +1,11 @@
 import 'package:fins/app_theme.dart';
 import 'package:fins/page/home.dart';
 import 'package:fins/page/login.dart';
-import 'package:fins/page/signup.dart';
+import 'package:fins/provider/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,33 +21,39 @@ class FINS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: checkLoginStatus(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Show loading indicator while checking login status
-        } else {
-          bool isLoggedIn = snapshot.data ?? false;
-          return MaterialApp(
-              theme: getAppTheme(),
-              home: isLoggedIn ? const HomePage() : const SignUpPage());
-        }
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        )
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: getAppTheme(),
+        title: "FINS",
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              if (snapshot.hasData) {
+                return const HomePage();
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(snapshot.error.toString()),
+                );
+              }
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              );
+            }
+            return const LoginPage();
+          },
+        ),
+      ),
     );
-  }
-
-  Future<bool> checkLoginStatus() async {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-      }
-    });
-
-    // ignore: unused_local_variable
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // return prefs.getBool('isLoggedIn') ?? false;
-    return false;
   }
 }

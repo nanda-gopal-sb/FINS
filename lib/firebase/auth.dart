@@ -1,4 +1,5 @@
 import 'package:fins/firebase/storage.dart';
+import 'package:fins/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -12,34 +13,27 @@ class AuthMethods {
     required String name,
     required String password,
     required Uint8List file,
+    required String ext,
   }) async {
     String res = "Some error Occurred";
     try {
-      if (email.isNotEmpty ||
-          name.isNotEmpty ||
-          password.isNotEmpty ||
-          file != null) {
+      if (email.isNotEmpty || name.isNotEmpty || password.isNotEmpty) {
         // registering user in auth with email and password
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        String uid = cred.user!.uid;
 
-        String photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file);
-
-        await _firestore.collection("users").doc(cred.user?.uid).set({
-          "uid": cred.user?.uid,
-          "email": email,
-          "name": name,
-          "photoURL": photoUrl,
-        });
-
-        // adding user in our database
-        // await _firestore
-        //     .collection("users")
-        //     .doc(cred.user!.uid)
-        //     .set(user.toJson());
+        String photoUrl = await StorageMethods()
+            .uploadImageToStorage('profilePics/$uid.$ext', file);
+        AppUser user = AppUser(
+          uid: cred.user!.uid,
+          email: email,
+          name: name,
+          photoURL: photoUrl,
+        );
+        await _firestore.collection("users").doc(uid).set(user.toJSON());
 
         res = "success";
       } else {
@@ -71,6 +65,13 @@ class AuthMethods {
       return err.toString();
     }
     return res;
+  }
+
+  Future<AppUser> getUserDetails() async {
+    User currentUser = _auth.currentUser!;
+    DocumentSnapshot snap =
+        await _firestore.collection('users').doc(currentUser.uid).get();
+    return AppUser.fromSnap(snap);
   }
 
   Future<void> signOut() async {

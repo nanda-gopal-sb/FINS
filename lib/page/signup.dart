@@ -1,10 +1,11 @@
-import 'package:fins/app_theme.dart';
-import 'package:fins/components/input_components.dart';
+import 'package:fins/utils/components.dart';
 import 'package:fins/firebase/auth.dart';
 import 'package:fins/utils/file_handler.dart';
+import 'package:fins/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 
 const users = {
   'dribbble@gmail.com': '12345',
@@ -24,6 +25,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _nameController = TextEditingController();
   Uint8List? _image;
   bool _isLoading = false;
+  bool _isDefaultPfp = true;
+  String _imageExt = "jpg";
 
   final defaultPfP = Image.asset(
     'assets/images/default_pfp.jpg',
@@ -48,15 +51,26 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void selectImage() async {
     final ImagePicker imgPicker = ImagePicker();
-
     XFile? file = await imgPicker.pickImage(source: ImageSource.gallery);
-    Uint8List img;
+    List<String> acceptedPfpExtensions = ["jpg", "jpeg", "png", "jpe"];
+
     if (file != null) {
-      file.readAsBytes().then((img) => setState(() => _image = img));
+      file.readAsBytes().then((img) => setState(() {
+            var mime = lookupMimeType('', headerBytes: img);
+            _imageExt = mime != null ? extensionFromMime(mime) : "null";
+            if (acceptedPfpExtensions.contains(_imageExt)) {
+              _image = img;
+              _isDefaultPfp = false;
+            } else {
+              showSnackBar(
+                  context, "Select a image in jpg or png format. $_imageExt ");
+            }
+          }));
     } else {
-      print("No img selected");
-      img = await getAssetAsUint8List("assets/images/default_pfp.jpg");
-      setState(() => _image = img);
+      if (_isDefaultPfp && context.mounted) {
+        // TODO: test if this may not get exectued if there's delay in context.mounted
+        showSnackBar(context, "No image selected");
+      }
     }
   }
 
@@ -65,15 +79,17 @@ class _SignUpPageState extends State<SignUpPage> {
       _isLoading = true;
     });
     String res = await AuthMethods().signUpUser(
-      email: _emailController.text,
-      name: _nameController.text,
-      password: _passwordController.text,
-      file: _image!,
-    );
+        email: _emailController.text,
+        name: _nameController.text,
+        password: _passwordController.text,
+        file: _image!,
+        ext: _imageExt);
 
     if (res != "success") {
-      showSnackBar(context, res);
-    } else {}
+      if (context.mounted) showSnackBar(context, res);
+    } else {
+      if (context.mounted) goToHome(context);
+    }
     setState(() {
       _isLoading = false;
     });
@@ -81,6 +97,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    ImageProvider profileImage =
+        (_image != null ? Image.memory(_image!) : defaultPfP).image;
+    var colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -94,11 +113,21 @@ class _SignUpPageState extends State<SignUpPage> {
                 width: 200,
                 child: Stack(
                   children: [
-                    CircleAvatar(
-                      radius: 100,
-                      backgroundColor: getAppTheme().colorScheme.background,
-                      child:
-                          _image != null ? Image.memory(_image!) : defaultPfP,
+                    Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: colorScheme.background,
+                        image: DecorationImage(
+                          image: profileImage,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(100.0),
+                        border: Border.all(
+                          color: colorScheme.onPrimaryContainer,
+                          width: 1.0,
+                        ),
+                      ),
                     ),
                     Positioned(
                       bottom: 5,
@@ -107,7 +136,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         onPressed: selectImage,
                         icon: Icon(
                           Icons.add_a_photo,
-                          color: Colors.grey.shade800,
+                          color: colorScheme.secondary,
                           size: 40,
                         ),
                       ),
@@ -138,19 +167,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 isPass: true,
               ),
               const SizedBox(height: 20),
-              InkWell(
-                onTap: signUp,
-                child: _isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: getAppTheme().colorScheme.primary,
-                        ),
-                      )
-                    : const Text("Create Account"),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
+              actionButton(context, signUp, _isLoading, "Create Account"),
+              const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
