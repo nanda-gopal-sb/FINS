@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '405851937316',
     projectId: 'project-fins',
     authDomain: 'project-fins.firebaseapp.com',
+    databaseURL: 'https://project-fins-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'project-fins.appspot.com',
   );
 
@@ -57,6 +58,7 @@ class DefaultFirebaseOptions {
     appId: '1:405851937316:android:54cbdf9c1824015df696b1',
     messagingSenderId: '405851937316',
     projectId: 'project-fins',
+    databaseURL: 'https://project-fins-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'project-fins.appspot.com',
   );
 
@@ -65,6 +67,7 @@ class DefaultFirebaseOptions {
     appId: '1:405851937316:ios:fd7211accdcb73b6f696b1',
     messagingSenderId: '405851937316',
     projectId: 'project-fins',
+    databaseURL: 'https://project-fins-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'project-fins.appspot.com',
     iosBundleId: 'com.example.fins',
   );
@@ -74,6 +77,7 @@ class DefaultFirebaseOptions {
     appId: '1:405851937316:ios:b742dcffb0a90438f696b1',
     messagingSenderId: '405851937316',
     projectId: 'project-fins',
+    databaseURL: 'https://project-fins-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'project-fins.appspot.com',
     iosBundleId: 'com.example.fins.RunnerTests',
   );

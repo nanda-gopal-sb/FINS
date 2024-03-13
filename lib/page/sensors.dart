@@ -1,14 +1,38 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class SensorWidget extends StatelessWidget {
+class SensorWidget extends StatefulWidget {
   const SensorWidget({super.key});
 
   @override
+  State<SensorWidget> createState() => _SensorWidgetState();
+}
+
+class _SensorWidgetState extends State<SensorWidget> {
+  double temperature = 0; //to be gotten from Sensors
+  double humidity = 0;
+  double moisture = 0;
+  FirebaseDatabase database = FirebaseDatabase.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    var fa = FirebaseAuth.instance.currentUser!;
+    DatabaseReference starCountRef = FirebaseDatabase.instance.ref('${fa.uid}');
+    starCountRef.onValue.listen((DatabaseEvent event) {
+      setState(() {
+        temperature = event.snapshot.child("Temperature").value as double;
+        humidity = event.snapshot.child("Humidity").value as double;
+        moisture = event.snapshot.child("Moisture").value as double;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double temperature = 39; //to be gotten from Sensors
-    double humidity = 85;
-    double moisture = 55;
+    // initDatabase();
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(30),
