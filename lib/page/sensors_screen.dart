@@ -14,6 +14,7 @@ class _SensorWidgetState extends State<SensorWidget> {
   double temperature = 0; // to be gotten from Sensors
   double humidity = 0;
   double moisture = 0;
+  bool isLoading = true;
   FirebaseDatabase database = FirebaseDatabase.instance;
 
   @override
@@ -23,6 +24,8 @@ class _SensorWidgetState extends State<SensorWidget> {
     DatabaseReference starCountRef = FirebaseDatabase.instance.ref(fa.uid);
     starCountRef.onValue.listen((DatabaseEvent event) {
       setState(() {
+        isLoading = false;
+        print("loaded");
         var snap = event.snapshot;
         temperature = double.parse(snap.child("Temperature").value.toString());
         humidity = double.parse(snap.child("Humidity").value.toString());
@@ -33,19 +36,35 @@ class _SensorWidgetState extends State<SensorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // initDatabase();
     return Expanded(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SensorCard(heading: "Temperature", unit: " °C", value: temperature),
-            SensorCard(heading: "Humidity", unit: " %", value: humidity),
-            SensorCard(heading: "Soil Moisture", unit: " %", value: moisture),
-          ],
-        ),
-      ),
+      child: isLoading
+          ? Container(
+              color: Colors.grey[300],
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Loading sensor data",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  SizedBox(height: 20),
+                  CircularProgressIndicator(color: Colors.green),
+                ],
+              ),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SensorCard(
+                      heading: "Temperature", unit: " °C", value: temperature),
+                  SensorCard(heading: "Humidity", unit: " %", value: humidity),
+                  SensorCard(
+                      heading: "Soil Moisture", unit: " %", value: moisture),
+                ],
+              ),
+            ),
     );
   }
 }
