@@ -1,6 +1,6 @@
 //import 'package:camera/camera.dart';
 import 'package:fins/page/home_screen.dart';
-import 'package:fins/page/sensors.dart';
+import 'package:fins/page/sensors_screen.dart';
 import 'package:fins/page/user_page.dart';
 import 'package:fins/provider/user_provider.dart';
 import 'package:flutter/material.dart';

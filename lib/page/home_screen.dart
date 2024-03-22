@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -10,53 +11,30 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  File? _selectedImage;
-
+  Image? _selectedImage;
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
           const SizedBox(height: 20),
-          SizedBox(
-            child: MaterialButton(
-              onPressed: () {
-                _pickImageFromGallery();
-              },
-              color: Colors.green,
-              child: const Text(
-                "Upload Image from Gallary",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
+          LongButton(
+            onclick: () => _pickImage(ImageSource.gallery),
+            text: "Upload Image from Gallary",
+            bgcolor: Colors.green,
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            child: MaterialButton(
-              onPressed: () {
-                _pickImageFromCamera();
-              },
-              color: Colors.cyan,
-              child: const Text(
-                "Upload Image from Camera",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
+          LongButton(
+            onclick: () => _pickImage(ImageSource.camera),
+            text: "Upload Image from Camera",
+            bgcolor: Colors.blue,
           ),
           const SizedBox(height: 20),
           _selectedImage != null
-              ? Image.file(
-                  _selectedImage!,
+              ? Image(
+                  image: _selectedImage!.image,
                   width: 300,
-                  height: 150,
+                  // height: 150,
                 )
               : const Text("Please Select an Image"),
         ],
@@ -64,20 +42,50 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  Future _pickImageFromGallery() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-        if(returnedImage == null) return ; 
+  Future _pickImage(ImageSource source) async {
+    final returnedImage = await ImagePicker().pickImage(source: source);
+    if (returnedImage == null) return;
     setState(() {
-      _selectedImage = File(returnedImage.path);
+      if (kIsWeb) {
+        _selectedImage = Image.network(returnedImage.path);
+      } else {
+        _selectedImage = Image.file(File(returnedImage.path));
+      }
     });
   }
-  Future _pickImageFromCamera() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-        if(returnedImage == null) return ; 
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
+}
+
+class LongButton extends StatelessWidget {
+  final VoidCallback onclick;
+  final String text;
+  final Color bgcolor;
+  const LongButton({
+    super.key,
+    required this.onclick,
+    required this.text,
+    required this.bgcolor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      onPressed: onclick,
+      color: bgcolor,
+      padding: const EdgeInsets.symmetric(
+        vertical: 15,
+        horizontal: 20,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+    );
   }
 }
