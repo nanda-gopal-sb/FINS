@@ -12,19 +12,23 @@ class AuthMethods {
     required String email,
     required String name,
     required String password,
+    required String confirmPassword,
     required Uint8List file,
     required String ext,
   }) async {
     String res = "Some error Occurred";
     try {
-      if (email.isNotEmpty || name.isNotEmpty || password.isNotEmpty) {
+      if (confirmPassword != password) {
+        return "Password doesnt match";
+      } else if (email.isEmpty || name.isEmpty || password.isEmpty) {
+        res = "Please enter all the fields";
+      } else {
         // registering user in auth with email and password
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
         String uid = cred.user!.uid;
-
         String photoUrl = await StorageMethods()
             .uploadImageToStorage('profilePics/$uid.$ext', file);
         AppUser user = AppUser(
@@ -36,8 +40,6 @@ class AuthMethods {
         await _firestore.collection("users").doc(uid).set(user.toJSON());
 
         res = "success";
-      } else {
-        res = "Please enter all the fields";
       }
     } catch (err) {
       return err.toString();
