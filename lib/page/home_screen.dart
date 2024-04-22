@@ -2,13 +2,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
-
-var interpreter;
-
-Future loadModel() async {
-  interpreter = await Interpreter.fromAsset('assets/models/output.tflite');
-}
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -47,12 +40,6 @@ class _UploadPageState extends State<UploadPage> {
         ],
       ),
     );
-  }
-
-  Future runModel() async {
-    loadModel();
-    var output = [];
-    interpreter.run(_selectedImage, output);
   }
 
   Future _pickImage(ImageSource source) async {

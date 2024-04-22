@@ -47,7 +47,6 @@ dependencies:
   firebase_storage: ^11.6.6
   provider: ^6.1.2
   mime: ^1.0.5
-  tflite_flutter:
   firebase_database: ^10.4.9
 dev_dependencies:
   flutter_test:
