@@ -1,4 +1,6 @@
-import 'package:fins/utils/components.dart';
+import 'package:fins/components/action_button.dart';
+import 'package:fins/components/input_text_field.dart';
+import 'package:fins/components/click_text.dart';
 import 'package:fins/firebase/auth.dart';
 import 'package:fins/page/forgot_password.dart';
 import 'package:fins/page/signup.dart';
@@ -79,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              actionButton(context, login, _isLoading, "Login"),
+              ActionButton(ontap: login, isLoading: _isLoading, text: "Login"),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

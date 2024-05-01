@@ -1,4 +1,6 @@
-import 'package:fins/utils/components.dart';
+import 'package:fins/components/action_button.dart';
+import 'package:fins/components/input_text_field.dart';
+import 'package:fins/components/click_text.dart';
 import 'package:fins/firebase/auth.dart';
 import 'package:fins/utils/file_handler.dart';
 import 'package:fins/utils/utils.dart';
@@ -6,11 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-
-const users = {
-  'dribbble@gmail.com': '12345',
-  'hunter@gmail.com': 'hunter',
-};
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -22,23 +19,19 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   Uint8List? _image;
   bool _isLoading = false;
   bool _isDefaultPfp = true;
-  String _imageExt = "jpg";
-
-  final defaultPfP = Image.asset(
-    'assets/images/default_pfp.jpg',
-    height: 200,
-    width: 200,
-  );
 
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _nameController.dispose();
   }
 
@@ -57,13 +50,15 @@ class _SignUpPageState extends State<SignUpPage> {
     if (file != null) {
       file.readAsBytes().then((img) => setState(() {
             var mime = lookupMimeType('', headerBytes: img);
-            _imageExt = mime != null ? extensionFromMime(mime) : "null";
-            if (acceptedPfpExtensions.contains(_imageExt)) {
+            String imageExt = mime != null ? extensionFromMime(mime) : "null";
+            if (acceptedPfpExtensions.contains(imageExt)) {
               _image = img;
               _isDefaultPfp = false;
             } else {
               showSnackBar(
-                  context, "Select a image in jpg or png format. $_imageExt ");
+                context,
+                "Select a image in jpg or png format. $imageExt",
+              );
             }
           }));
     } else {
@@ -78,12 +73,12 @@ class _SignUpPageState extends State<SignUpPage> {
       _isLoading = true;
     });
     String res = await AuthMethods().signUpUser(
-        email: _emailController.text,
-        name: _nameController.text,
-        password: _passwordController.text,
-        file: _image!,
-        ext: _imageExt,
-        confirmPassword: '');
+      email: _emailController.text,
+      name: _nameController.text,
+      password: _passwordController.text,
+      file: _image!,
+      confirmPassword: _confirmPasswordController.text,
+    );
 
     if (res != "success") {
       if (context.mounted) showSnackBar(context, res);
@@ -97,8 +92,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider profileImage =
-        (_image != null ? Image.memory(_image!) : defaultPfP).image;
     var colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
@@ -119,7 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       decoration: BoxDecoration(
                         color: colorScheme.background,
                         image: DecorationImage(
-                          image: profileImage,
+                          image: fetchImageSafely(_image),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(100.0),
@@ -166,8 +159,20 @@ class _SignUpPageState extends State<SignUpPage> {
                 textInputType: TextInputType.visiblePassword,
                 isPass: true,
               ),
+              const SizedBox(height: 10),
+              InputTextField(
+                textEditingController: _confirmPasswordController,
+                hintText: "Confirm Password",
+                labelText: "Password",
+                textInputType: TextInputType.visiblePassword,
+                isPass: true,
+              ),
               const SizedBox(height: 20),
-              actionButton(context, signUp, _isLoading, "Create Account"),
+              ActionButton(
+                ontap: signUp,
+                isLoading: _isLoading,
+                text: "Create Account",
+              ),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,5 @@
-import 'package:fins/utils/components.dart';
+import 'package:fins/components/action_button.dart';
+import 'package:fins/components/input_text_field.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {

@@ -1,7 +1,6 @@
 import 'package:fins/app_theme.dart';
 import 'package:fins/page/home.dart';
 import 'package:fins/page/login.dart';
-import 'package:fins/page/signup.dart';
 import 'package:fins/provider/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

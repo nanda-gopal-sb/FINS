@@ -1,8 +1,9 @@
+import 'package:fins/components/action_button.dart';
 import 'package:fins/firebase/auth.dart';
 import 'package:fins/models/user.dart';
 import 'package:fins/page/login.dart';
 import 'package:fins/provider/user_provider.dart';
-import 'package:fins/utils/components.dart';
+import 'package:fins/utils/file_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +44,7 @@ class UserProfile extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.background,
             image: DecorationImage(
-              image: NetworkImage(user.photoURL),
+              image: fetchImageSafely(user.photoURL),
               fit: BoxFit.cover,
             ),
             borderRadius: const BorderRadius.all(Radius.circular(100.0)),

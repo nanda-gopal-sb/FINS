@@ -2,6 +2,7 @@ import 'package:fins/firebase/storage.dart';
 import 'package:fins/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthMethods {
@@ -14,7 +15,6 @@ class AuthMethods {
     required String password,
     required String confirmPassword,
     required Uint8List file,
-    required String ext,
   }) async {
     String res = "Some error Occurred";
     try {
@@ -29,16 +29,27 @@ class AuthMethods {
           password: password,
         );
         String uid = cred.user!.uid;
-        String photoUrl = await StorageMethods()
-            .uploadImageToStorage('profilePics/$uid.$ext', file);
+        String photoUrl = "";
+
+        try {
+          photoUrl =
+              await StorageMethods().uploadImageToStorage('$uid/profile', file);
+        } catch (err) {
+          // bypass incase photo upload fails
+        }
+
         AppUser user = AppUser(
           uid: cred.user!.uid,
           email: email,
           name: name,
           photoURL: photoUrl,
         );
-        await _firestore.collection("users").doc(uid).set(user.toJSON());
 
+        await _firestore.collection("users").doc(uid).set(user.toJSON());
+        var fa = FirebaseAuth.instance.currentUser!;
+        DatabaseReference userSensorDataRef =
+            FirebaseDatabase.instance.ref(fa.uid);
+        userSensorDataRef.child("isConnected").set("false");
         res = "success";
       }
     } catch (err) {
@@ -71,6 +82,7 @@ class AuthMethods {
 
   Future<AppUser> getUserDetails() async {
     User currentUser = _auth.currentUser!;
+
     DocumentSnapshot snap =
         await _firestore.collection('users').doc(currentUser.uid).get();
     return AppUser.fromSnap(snap);

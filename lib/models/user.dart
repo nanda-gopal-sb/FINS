@@ -20,7 +20,17 @@ class AppUser {
       };
 
   static AppUser fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
+    Map<String, dynamic> snapshot = {
+      "uid": "",
+      "email": "",
+      "name": "",
+      "photoURL": "",
+    };
+    try {
+      snapshot = snap.data() as Map<String, dynamic>;
+    } catch (err) {
+      print(snap.data());
+    }
 
     return AppUser(
       uid: snapshot["uid"],
