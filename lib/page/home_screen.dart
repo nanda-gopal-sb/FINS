@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -11,8 +12,14 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  Image? _selectedImage;
   @override
+  void initState() async {
+    final interpreter =
+        await Interpreter.fromAsset('assets/model/output.tflite');
+    print(_selectedImage);
+  }
+
+  Image? _selectedImage;
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
