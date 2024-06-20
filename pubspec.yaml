@@ -49,6 +49,8 @@ dependencies:
   mime: ^1.0.5
   firebase_database: ^10.4.9
   tflite_flutter: ^0.10.4
+  camera: ^0.11.0+1
+  image: ^4.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -76,6 +78,7 @@ flutter:
     - assets/images/icon.png
     - assets/images/default_pfp.jpg
     - assets/models/output.tflite
+    - assets/models/labels.txt
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

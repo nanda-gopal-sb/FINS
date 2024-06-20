@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as im;
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -12,14 +14,40 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  @override
-  void initState() async {
+  Image? _selectedImage;
+  late Tensor inputTensor;
+  late Tensor outputTensor;
+  var labels;
+  //late final IsolateInference isolateInference;
+  // ignore: unused_element
+  Future<void> _loadAndRun() async {
     final interpreter =
-        await Interpreter.fromAsset('assets/model/output.tflite');
-    print(_selectedImage);
+        await Interpreter.fromAsset('assets/models/output.tflite');
+    inputTensor = interpreter.getInputTensors().first;
+    outputTensor = interpreter.getOutputTensors().first;
+
+    //print("Called");
   }
 
-  Image? _selectedImage;
+  Future<void> _loadLabels() async {
+    final labelTxt = await rootBundle.loadString("assets/models/labels.txt");
+    labels = labelTxt.split('\n');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLabels();
+    _loadAndRun();
+  }
+
+  //  Future<void> initHelper() async {
+  //   _loadLabels();
+  //   _loadModel();
+  //   isolateInference = IsolateInference();
+  //   await isolateInference.start();
+  // }
+  @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
@@ -34,7 +62,7 @@ class _UploadPageState extends State<UploadPage> {
           LongButton(
             onclick: () => _pickImage(ImageSource.camera),
             text: "Upload Image from Camera",
-            bgcolor: Colors.blue,
+            bgcolor: Colors.red,
           ),
           const SizedBox(height: 20),
           _selectedImage != null

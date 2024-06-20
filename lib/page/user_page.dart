@@ -42,7 +42,7 @@ class UserProfile extends StatelessWidget {
           width: 200,
           height: 200,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             image: DecorationImage(
               image: fetchImageSafely(user.photoURL),
               fit: BoxFit.cover,

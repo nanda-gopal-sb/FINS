@@ -13,7 +13,7 @@ ThemeData getAppTheme() {
     ),
     textButtonTheme: const TextButtonThemeData(
       style:
-          ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.green)),
+          ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.green)),
     ),
   );
 }
