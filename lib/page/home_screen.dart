@@ -3,8 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:image/image.dart' as im;
+import 'package:tflite/tflite.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -15,30 +14,32 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   Image? _selectedImage;
-  late Tensor inputTensor;
-  late Tensor outputTensor;
-  var labels;
-  //late final IsolateInference isolateInference;
-  // ignore: unused_element
-  Future<void> _loadAndRun() async {
-    final interpreter =
-        await Interpreter.fromAsset('assets/models/output.tflite');
-    inputTensor = interpreter.getInputTensors().first;
-    outputTensor = interpreter.getOutputTensors().first;
-
-    //print("Called");
+  Future<void> _loadModel() async {
+    Tflite.close();
+    String res;
+    res = (await Tflite.loadModel(
+        model: "assets/models/output.tflite",
+        labels: "assets/models/labels.txt"))!;
+    print("Models loading status: $res");
   }
 
-  Future<void> _loadLabels() async {
-    final labelTxt = await rootBundle.loadString("assets/models/labels.txt");
-    labels = labelTxt.split('\n');
+  Future<void> _runModel(File image) async {
+    final List? recognitions = await Tflite.runModelOnImage(
+      path: image.path,
+      numResults: 6,
+      // threshold: 0.05,
+      // imageMean: 127.5,
+      // imageStd: 127.5,
+    );
+
+    print(recognitions);
+    print("Called");
   }
 
   @override
   void initState() {
     super.initState();
-    _loadLabels();
-    _loadAndRun();
+    _loadModel();
   }
 
   //  Future<void> initHelper() async {
@@ -78,14 +79,17 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   Future _pickImage(ImageSource source) async {
-    final returnedImage = await ImagePicker().pickImage(source: source);
-    if (returnedImage == null) return;
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile == null) return;
+    final returnedImagePath = pickedFile.path;
     setState(() {
       if (kIsWeb) {
-        _selectedImage = Image.network(returnedImage.path);
+        _selectedImage = Image.network(returnedImagePath);
       } else {
-        _selectedImage = Image.file(File(returnedImage.path));
+        _selectedImage = Image.file(File(returnedImagePath));
       }
+      File image = File(pickedFile.path);
+      _runModel(image);
     });
   }
 }
