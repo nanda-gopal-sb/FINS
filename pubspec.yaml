@@ -35,23 +35,21 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  syncfusion_flutter_gauges: ^25.1.42
+  syncfusion_flutter_gauges: ^26.1.38
   shared_preferences: ^2.2.2
-  firebase_core: ^2.25.4
-  firebase_auth: ^4.17.4
+  firebase_core: ^3.1.0
+  firebase_auth: ^5.1.0
   #camera:
   path_provider: ^2.1.2
   path: ^1.8.3
-  image_picker: ^1.0.7 
-  cloud_firestore: ^4.15.5
-  firebase_storage: ^11.6.6
+  image_picker: ^0.8.9
+  cloud_firestore: ^5.0.1
+  firebase_storage: ^12.0.1
   provider: ^6.1.2
   mime: ^1.0.5
-  firebase_database: ^10.4.9
-  tflite_flutter: ^0.10.4
+  firebase_database: ^11.0.1
   camera: ^0.11.0+1
-  image: ^4.2.0
-  tflite: ^1.1.2
+  flutter_tflite: 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,7 +59,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.1
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,6 +78,7 @@ flutter:
     - assets/images/default_pfp.jpg
     - assets/models/output.tflite
     - assets/models/labels.txt
+    - assets/images/upload.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

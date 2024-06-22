@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'dart:developer' as devtools;
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
+import 'package:flutter_tflite/flutter_tflite.dart';
 
 class UploadPage extends StatefulWidget {
   const UploadPage({super.key});
@@ -13,117 +12,208 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
-  Image? _selectedImage;
-  Future<void> _loadModel() async {
-    Tflite.close();
-    String res;
-    res = (await Tflite.loadModel(
+  File? filePath;
+  String label = '';
+  double confidence = 0.0;
+
+  Future<void> _tfLteInit() async {
+    String? res = await Tflite.loadModel(
         model: "assets/models/output.tflite",
-        labels: "assets/models/labels.txt"))!;
-    print("Models loading status: $res");
+        labels: "assets/models/labels.txt",
+        numThreads: 1, // defaults to 1
+        isAsset:
+            true, // defaults to true, set to false to load resources outside assets
+        useGpuDelegate:
+            false // defaults to false, set to true to use GPU delegate
+        );
   }
 
-  Future<void> _runModel(File image) async {
-    final List? recognitions = await Tflite.runModelOnImage(
-      path: image.path,
-      numResults: 6,
-      // threshold: 0.05,
-      // imageMean: 127.5,
-      // imageStd: 127.5,
-    );
+  pickImageGallery() async {
+    final ImagePicker picker = ImagePicker();
+// Pick an image.
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-    print(recognitions);
-    print("Called");
+    if (image == null) return;
+
+    var imageMap = File(image.path);
+
+    setState(() {
+      filePath = imageMap;
+      devtools.log(filePath.toString());
+    });
+
+    var recognitions = await Tflite.runModelOnImage(
+        path: image.path, // required
+        imageMean: 0.0, // defaults to 117.0
+        imageStd: 255.0, // defaults to 1.0
+        numResults: 2, // defaults to 5
+        threshold: 0.2, // defaults to 0.1
+        asynch: false // defaults to true
+        );
+
+    if (recognitions == null) {
+      devtools.log("recognitions is Null");
+      return;
+    }
+    devtools.log(recognitions.toString());
+    setState(() {
+      confidence = (recognitions[0]['confidence'] * 100);
+      label = recognitions[0]['label'].toString();
+    });
+  }
+
+  pickImageCamera() async {
+    final ImagePicker picker = ImagePicker();
+// Pick an image.
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image == null) return;
+
+    var imageMap = File(image.path);
+
+    setState(() {
+      filePath = imageMap;
+    });
+
+    var recognitions = await Tflite.runModelOnImage(
+        path: image.path, // required
+        imageMean: 0.0, // defaults to 117.0
+        imageStd: 255.0, // defaults to 1.0
+        numResults: 2, // defaults to 5
+        threshold: 0.2, // defaults to 0.1
+        asynch: true // defaults to true
+        );
+
+    if (recognitions == null) {
+      devtools.log("recognitions is Null");
+      return;
+    }
+    devtools.log(recognitions.toString());
+    setState(() {
+      confidence = (recognitions[0]['confidence'] * 100);
+      label = recognitions[0]['label'].toString();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Tflite.close();
   }
 
   @override
   void initState() {
     super.initState();
-    _loadModel();
+    _tfLteInit();
   }
 
-  //  Future<void> initHelper() async {
-  //   _loadLabels();
-  //   _loadModel();
-  //   isolateInference = IsolateInference();
-  //   await isolateInference.start();
-  // }
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
         children: [
-          const SizedBox(height: 20),
-          LongButton(
-            onclick: () => _pickImage(ImageSource.gallery),
-            text: "Upload Image from Gallary",
-            bgcolor: Colors.green,
+          const SizedBox(
+            height: 20,
           ),
-          const SizedBox(height: 20),
-          LongButton(
-            onclick: () => _pickImage(ImageSource.camera),
-            text: "Upload Image from Camera",
-            bgcolor: Colors.red,
+          Card(
+            elevation: 20,
+            clipBehavior: Clip.hardEdge,
+            child: SizedBox(
+              width: 300,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 18,
+                    ),
+                    Container(
+                      height: 280,
+                      width: 280,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/upload.jpg'),
+                        ),
+                      ),
+                      child: filePath == null
+                          ? const Text('')
+                          : Image.file(
+                              filePath!,
+                              fit: BoxFit.fill,
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            label,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            "The Accuracy is ${confidence.toStringAsFixed(0)}%",
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: 20),
-          _selectedImage != null
-              ? Image(
-                  image: _selectedImage!.image,
-                  width: 300,
-                  // height: 150,
-                )
-              : const Text("Please Select an Image"),
+          const SizedBox(
+            height: 8,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              pickImageCamera();
+            },
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                foregroundColor: Colors.black),
+            child: const Text(
+              "Take a Photo",
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              pickImageGallery();
+            },
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                foregroundColor: Colors.black),
+            child: const Text(
+              "Pick from gallery",
+            ),
+          ),
         ],
-      ),
-    );
-  }
-
-  Future _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile == null) return;
-    final returnedImagePath = pickedFile.path;
-    setState(() {
-      if (kIsWeb) {
-        _selectedImage = Image.network(returnedImagePath);
-      } else {
-        _selectedImage = Image.file(File(returnedImagePath));
-      }
-      File image = File(pickedFile.path);
-      _runModel(image);
-    });
-  }
-}
-
-class LongButton extends StatelessWidget {
-  final VoidCallback onclick;
-  final String text;
-  final Color bgcolor;
-  const LongButton({
-    super.key,
-    required this.onclick,
-    required this.text,
-    required this.bgcolor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: onclick,
-      color: bgcolor,
-      padding: const EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 20,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
       ),
     );
   }
