@@ -17,6 +17,7 @@ class _UploadPageState extends State<UploadPage> {
   double confidence = 0.0;
 
   Future<void> _tfLteInit() async {
+    // ignore: unused_local_variable
     String? res = await Tflite.loadModel(
         model: "assets/models/output.tflite",
         labels: "assets/models/labels.txt",
@@ -159,12 +160,6 @@ class _UploadPageState extends State<UploadPage> {
                           ),
                           const SizedBox(
                             height: 12,
-                          ),
-                          Text(
-                            "The Accuracy is ${confidence.toStringAsFixed(0)}%",
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
                           ),
                           const SizedBox(
                             height: 12,

@@ -50,6 +50,7 @@ dependencies:
   firebase_database: ^11.0.1
   camera: ^0.11.0+1
   flutter_tflite: 
+  web_socket_channel: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
